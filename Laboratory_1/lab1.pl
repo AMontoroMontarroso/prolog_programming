@@ -1,3 +1,97 @@
+%%% HECHOS
+hombre(teraj).
+hombre(abraham).
+hombre(najor).
+hombre(haran).
+hombre(lot).
+hombre(ismael).
+hombre(isaac).
+hombre(batuel).
+hombre(esau).
+hombre(jacob).
+hombre(laban).
+
+mujer(sara).
+mujer(melca).
+mujer(jesca).
+mujer(agar).
+mujer(rebeca).
+
+casado(abraham, sara).
+casado(najor,melca).
+casado(abraham, agar).
+casado(isaac, rebeca).
+
+padre(teraj, abraham).
+padre(teraj, sara).
+padre(teraj, najor).
+padre(teraj, haran).
+padre(haran,lot).
+padre(haran,melca).
+padre(haran,jesca).
+padre(abraham,isaac).
+padre(abraham, ismael).
+padre(najor, batuel).
+padre(batuel, rebeca).
+padre(batuel, laban).
+padre(isaac, esau).
+padre(isaac, jacob).
+
+madre(rebeca, jacob).
+madre(rebeca, esau).
+madre(melca, batuel).
+madre(sara, isaac).
+madre(agar, ismael).
+
+
+%%% REGLAS
+
+descendiente(X, Y) :- ascendiente(Y, X).
+
+ascendiente_directo(X, Y) :- (padre(X, Y); madre(X, Y)).
+ascendiente(X, Z) :- ascendiente_directo(X, Z).
+ascendiente(X, Z) :- ascendiente_directo(X, Y), ascendiente(Y, Z).
+
+hijo(X,Y) :- hombre(X), ascendiente_directo(Y,X).
+hija(X,Y) :- mujer(X), ascendiente_directo(Y,X).
+
+abuelo(X, Y) :- hombre(X), ascendiente_directo(X, Z), ascendiente_directo(Z, Y).
+abuela(X, Y) :- mujer(X),  ascendiente_directo(X, Z), ascendiente_directo(Z, Y).
+
+hermano(X, Y) :- hombre(X), ascendiente_directo(Z, Y), ascendiente_directo(Z, X), X \== Y.
+hermana(X, Y) :- mujer(X), ascendiente_directo(Z, Y), ascendiente_directo(Z, X), X \== Y.
+
+tio(X, Y) :- hombre(X), hermano(X, Z), ascendiente_directo(Z, Y).
+tia(X, Y) :- mujer(X), hermana(X, Z), ascendiente_directo(Z, Y).
+
+sobrino(X, Y) :- hombre(X), ascendiente_directo(Z, X), (hermana(Z, Y) ; hermano(Z, Y)).
+sobrina(X, Y) :- mujer(X), ascendiente_directo(Z, X), (hermana(Z, Y) ; hermano(Z, Y)).
+
+primo(X, Y) :- hombre(X), 
+                ascendiente_directo(Z, X), 
+                ascendiente_directo(W, Y), 
+                (hermana(Z, W) ; hermano(Z, W)), X \== Y.
+prima(X, Y) :- mujer(X), 
+                ascendiente_directo(Z, X), 
+                ascendiente_directo(W, Y), 
+                (hermana(Z, W) ; hermano(Z, W)), X \== Y.
+
+incesto(X, Y) :- casado(X, Y), 
+                    (ascendiente(X, Y); 
+                        ascendiente(Y, X); 
+                        tia(X, Y); 
+                        tio(X, Y); 
+                        tia(Y, X); 
+                        tio(Y, X); 
+                        hermano(X, Y);
+                        hermana(X, Y);
+                        hermano(Y, X);
+                        hermana(Y, X);
+                        primo(X, Y);
+                        prima(X, Y);
+                        primo(Y, X);
+                        prima(X, Y)).
+
 %Ejercicio 2
 
 %HECHOS
